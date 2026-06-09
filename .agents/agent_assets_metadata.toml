@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "D91XmimVav9YRMv8adSB5"
+uri = "file://README.md"
+type = "text"
+title = "EcoTrace — README"
