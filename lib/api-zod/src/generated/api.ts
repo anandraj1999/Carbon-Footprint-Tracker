@@ -180,6 +180,52 @@ export const CreateGoalBody = zod.object({
 
 
 /**
+ * @summary List available offset projects
+ */
+export const ListOffsetProjectsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "type": zod.string().describe('reforestation, renewable_energy, methane_capture, ocean, cookstoves'),
+  "location": zod.string(),
+  "description": zod.string(),
+  "pricePerTonneCo2": zod.number().describe('USD per tonne CO2'),
+  "availableTonnes": zod.number(),
+  "certifier": zod.string().describe('Gold Standard, Verra VCS, Plan Vivo, etc.'),
+  "imageSlug": zod.string(),
+  "impactCategory": zod.string().describe('nature, energy, community')
+})
+export const ListOffsetProjectsResponse = zod.array(ListOffsetProjectsResponseItem)
+
+
+/**
+ * @summary Get offset purchase history and summary
+ */
+export const ListOffsetPurchasesResponse = zod.object({
+  "totalOffsetKg": zod.number(),
+  "totalSpentUsd": zod.number(),
+  "netEmissionsKg": zod.number(),
+  "totalEmissionsKg": zod.number(),
+  "purchases": zod.array(zod.object({
+  "id": zod.number(),
+  "projectId": zod.number(),
+  "projectName": zod.string(),
+  "amountKg": zod.number().describe('CO2 offset in kg'),
+  "amountUsd": zod.number(),
+  "purchasedAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Purchase a carbon offset
+ */
+export const PurchaseOffsetBody = zod.object({
+  "projectId": zod.number(),
+  "amountKg": zod.number()
+})
+
+
+/**
  * @summary Update a goal
  */
 export const UpdateGoalParams = zod.object({

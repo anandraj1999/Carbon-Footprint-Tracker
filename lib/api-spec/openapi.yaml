@@ -18,6 +18,8 @@ tags:
     description: Personalized reduction tips
   - name: goals
     description: User emission goals
+  - name: offsets
+    description: Carbon offset marketplace and purchases
 
 paths:
   /healthz:
@@ -234,6 +236,63 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Goal"
+
+  /offsets/projects:
+    get:
+      operationId: listOffsetProjects
+      tags: [offsets]
+      summary: List available offset projects
+      responses:
+        "200":
+          description: List of offset projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OffsetProject"
+
+  /offsets/purchases:
+    get:
+      operationId: listOffsetPurchases
+      tags: [offsets]
+      summary: Get offset purchase history and summary
+      responses:
+        "200":
+          description: Offset summary with purchases
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OffsetSummary"
+    post:
+      operationId: purchaseOffset
+      tags: [offsets]
+      summary: Purchase a carbon offset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OffsetPurchaseInput"
+      responses:
+        "201":
+          description: Purchase confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OffsetPurchase"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 
   /goals/{id}:
     patch:
@@ -455,3 +514,77 @@ components:
           type: number
         period:
           type: string
+
+    OffsetProject:
+      type: object
+      required: [id, name, type, location, description, pricePerTonneCo2, availableTonnes, certifier, imageSlug, impactCategory]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          description: "reforestation, renewable_energy, methane_capture, ocean, cookstoves"
+        location:
+          type: string
+        description:
+          type: string
+        pricePerTonneCo2:
+          type: number
+          description: "USD per tonne CO2"
+        availableTonnes:
+          type: number
+        certifier:
+          type: string
+          description: "Gold Standard, Verra VCS, Plan Vivo, etc."
+        imageSlug:
+          type: string
+        impactCategory:
+          type: string
+          description: "nature, energy, community"
+
+    OffsetPurchase:
+      type: object
+      required: [id, projectId, projectName, amountKg, amountUsd, purchasedAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        projectName:
+          type: string
+        amountKg:
+          type: number
+          description: "CO2 offset in kg"
+        amountUsd:
+          type: number
+        purchasedAt:
+          type: string
+          format: date-time
+
+    OffsetPurchaseInput:
+      type: object
+      required: [projectId, amountKg]
+      properties:
+        projectId:
+          type: integer
+        amountKg:
+          type: number
+
+    OffsetSummary:
+      type: object
+      required: [totalOffsetKg, totalSpentUsd, netEmissionsKg, totalEmissionsKg, purchases]
+      properties:
+        totalOffsetKg:
+          type: number
+        totalSpentUsd:
+          type: number
+        netEmissionsKg:
+          type: number
+        totalEmissionsKg:
+          type: number
+        purchases:
+          type: array
+          items:
+            $ref: "#/components/schemas/OffsetPurchase"

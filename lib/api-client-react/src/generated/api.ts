@@ -30,6 +30,10 @@ import type {
   GoalUpdate,
   HealthStatus,
   ListActivitiesParams,
+  OffsetProject,
+  OffsetPurchase,
+  OffsetPurchaseInput,
+  OffsetSummary,
   Tip,
   TrendPoint
 } from './api.schemas';
@@ -879,6 +883,231 @@ export const useCreateGoal = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getCreateGoalMutationOptions(options));
+    }
+
+export const getListOffsetProjectsUrl = () => {
+
+
+
+
+  return `/api/offsets/projects`
+}
+
+/**
+ * @summary List available offset projects
+ */
+export const listOffsetProjects = async ( options?: RequestInit): Promise<OffsetProject[]> => {
+
+  return customFetch<OffsetProject[]>(getListOffsetProjectsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOffsetProjectsQueryKey = () => {
+    return [
+    `/api/offsets/projects`
+    ] as const;
+    }
+
+
+export const getListOffsetProjectsQueryOptions = <TData = Awaited<ReturnType<typeof listOffsetProjects>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOffsetProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOffsetProjectsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOffsetProjects>>> = ({ signal }) => listOffsetProjects({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOffsetProjects>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOffsetProjectsQueryResult = NonNullable<Awaited<ReturnType<typeof listOffsetProjects>>>
+export type ListOffsetProjectsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List available offset projects
+ */
+
+export function useListOffsetProjects<TData = Awaited<ReturnType<typeof listOffsetProjects>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOffsetProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOffsetProjectsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListOffsetPurchasesUrl = () => {
+
+
+
+
+  return `/api/offsets/purchases`
+}
+
+/**
+ * @summary Get offset purchase history and summary
+ */
+export const listOffsetPurchases = async ( options?: RequestInit): Promise<OffsetSummary> => {
+
+  return customFetch<OffsetSummary>(getListOffsetPurchasesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListOffsetPurchasesQueryKey = () => {
+    return [
+    `/api/offsets/purchases`
+    ] as const;
+    }
+
+
+export const getListOffsetPurchasesQueryOptions = <TData = Awaited<ReturnType<typeof listOffsetPurchases>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOffsetPurchases>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListOffsetPurchasesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listOffsetPurchases>>> = ({ signal }) => listOffsetPurchases({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listOffsetPurchases>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListOffsetPurchasesQueryResult = NonNullable<Awaited<ReturnType<typeof listOffsetPurchases>>>
+export type ListOffsetPurchasesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get offset purchase history and summary
+ */
+
+export function useListOffsetPurchases<TData = Awaited<ReturnType<typeof listOffsetPurchases>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listOffsetPurchases>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListOffsetPurchasesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getPurchaseOffsetUrl = () => {
+
+
+
+
+  return `/api/offsets/purchases`
+}
+
+/**
+ * @summary Purchase a carbon offset
+ */
+export const purchaseOffset = async (offsetPurchaseInput: OffsetPurchaseInput, options?: RequestInit): Promise<OffsetPurchase> => {
+
+  return customFetch<OffsetPurchase>(getPurchaseOffsetUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      offsetPurchaseInput,)
+  }
+);}
+
+
+
+
+export const getPurchaseOffsetMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof purchaseOffset>>, TError,{data: BodyType<OffsetPurchaseInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof purchaseOffset>>, TError,{data: BodyType<OffsetPurchaseInput>}, TContext> => {
+
+const mutationKey = ['purchaseOffset'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof purchaseOffset>>, {data: BodyType<OffsetPurchaseInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  purchaseOffset(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PurchaseOffsetMutationResult = NonNullable<Awaited<ReturnType<typeof purchaseOffset>>>
+    export type PurchaseOffsetMutationBody = BodyType<OffsetPurchaseInput>
+    export type PurchaseOffsetMutationError = ErrorType<ApiError>
+
+    /**
+ * @summary Purchase a carbon offset
+ */
+export const usePurchaseOffset = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof purchaseOffset>>, TError,{data: BodyType<OffsetPurchaseInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof purchaseOffset>>,
+        TError,
+        {data: BodyType<OffsetPurchaseInput>},
+        TContext
+      > => {
+      return useMutation(getPurchaseOffsetMutationOptions(options));
     }
 
 export const getUpdateGoalUrl = (id: number,) => {
