@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Leaf, Plus, LayoutDashboard, History, Lightbulb, Target } from "lucide-react";
+import { Leaf, Plus, LayoutDashboard, History, Lightbulb, Target, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -11,6 +11,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { name: "History", href: "/history", icon: History },
     { name: "Insights", href: "/insights", icon: Lightbulb },
     { name: "Goals", href: "/goals", icon: Target },
+    { name: "Offset", href: "/offsets", icon: ShoppingBag },
   ];
 
   return (
