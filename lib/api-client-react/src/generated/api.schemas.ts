@@ -103,46 +103,6 @@ export interface GoalUpdate {
   period?: string;
 }
 
-export interface OffsetProject {
-  id: number;
-  name: string;
-  /** reforestation, renewable_energy, methane_capture, ocean, cookstoves */
-  type: string;
-  location: string;
-  description: string;
-  /** USD per tonne CO2 */
-  pricePerTonneCo2: number;
-  availableTonnes: number;
-  /** Gold Standard, Verra VCS, Plan Vivo, etc. */
-  certifier: string;
-  imageSlug: string;
-  /** nature, energy, community */
-  impactCategory: string;
-}
-
-export interface OffsetPurchase {
-  id: number;
-  projectId: number;
-  projectName: string;
-  /** CO2 offset in kg */
-  amountKg: number;
-  amountUsd: number;
-  purchasedAt: string;
-}
-
-export interface OffsetPurchaseInput {
-  projectId: number;
-  amountKg: number;
-}
-
-export interface OffsetSummary {
-  totalOffsetKg: number;
-  totalSpentUsd: number;
-  netEmissionsKg: number;
-  totalEmissionsKg: number;
-  purchases: OffsetPurchase[];
-}
-
 export type ListActivitiesParams = {
 category?: string;
 limit?: number;
