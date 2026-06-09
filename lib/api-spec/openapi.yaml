@@ -3,13 +3,22 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Carbon Footprint Tracker API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: activities
+    description: Carbon activity logging
+  - name: dashboard
+    description: Dashboard summary and trend data
+  - name: tips
+    description: Personalized reduction tips
+  - name: goals
+    description: User emission goals
+
 paths:
   /healthz:
     get:
@@ -24,6 +33,246 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /activities:
+    get:
+      operationId: listActivities
+      tags: [activities]
+      summary: List activities
+      description: Returns all logged carbon activities, newest first
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+    post:
+      operationId: createActivity
+      tags: [activities]
+      summary: Log a new activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityInput"
+      responses:
+        "201":
+          description: Created activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /activities/{id}:
+    get:
+      operationId: getActivity
+      tags: [activities]
+      summary: Get a single activity
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    patch:
+      operationId: updateActivity
+      tags: [activities]
+      summary: Update an activity
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityUpdate"
+      responses:
+        "200":
+          description: Updated activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteActivity
+      tags: [activities]
+      summary: Delete an activity
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary
+      description: Returns total CO2, breakdown by category, and comparison to last period
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/trend:
+    get:
+      operationId: getDashboardTrend
+      tags: [dashboard]
+      summary: Get CO2 trend over last 30 days
+      description: Returns daily CO2 totals for charting
+      responses:
+        "200":
+          description: Trend data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrendPoint"
+
+  /tips:
+    get:
+      operationId: listTips
+      tags: [tips]
+      summary: Get personalized reduction tips
+      description: Returns tips based on the user's top emission categories
+      responses:
+        "200":
+          description: List of tips
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tip"
+
+  /goals:
+    get:
+      operationId: listGoals
+      tags: [goals]
+      summary: List emission goals
+      responses:
+        "200":
+          description: List of goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Goal"
+    post:
+      operationId: createGoal
+      tags: [goals]
+      summary: Create an emission goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoalInput"
+      responses:
+        "201":
+          description: Created goal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Goal"
+
+  /goals/{id}:
+    patch:
+      operationId: updateGoal
+      tags: [goals]
+      summary: Update a goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoalUpdate"
+      responses:
+        "200":
+          description: Updated goal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Goal"
+    delete:
+      operationId: deleteGoal
+      tags: [goals]
+      summary: Delete a goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +283,175 @@ components:
       required:
         - status
 
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Activity:
+      type: object
+      required: [id, category, activityType, amount, unit, co2Kg, date, createdAt]
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+          description: "One of: transportation, food, energy, shopping"
+        activityType:
+          type: string
+          description: "Specific type within category (e.g. car_gasoline, beef, flight_short)"
+        amount:
+          type: number
+          description: "Numeric quantity (km driven, kg eaten, kWh used, $ spent)"
+        unit:
+          type: string
+          description: "Unit of amount (km, kg, kWh, usd)"
+        co2Kg:
+          type: number
+          description: "Calculated CO2 equivalent in kilograms"
+        date:
+          type: string
+          format: date
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ActivityInput:
+      type: object
+      required: [category, activityType, amount, unit, date]
+      properties:
+        category:
+          type: string
+        activityType:
+          type: string
+        amount:
+          type: number
+        unit:
+          type: string
+        date:
+          type: string
+          format: date
+        notes:
+          type: string
+
+    ActivityUpdate:
+      type: object
+      properties:
+        category:
+          type: string
+        activityType:
+          type: string
+        amount:
+          type: number
+        unit:
+          type: string
+        date:
+          type: string
+          format: date
+        notes:
+          type: ["string", "null"]
+
+    CategoryBreakdown:
+      type: object
+      required: [category, co2Kg, percentage, count]
+      properties:
+        category:
+          type: string
+        co2Kg:
+          type: number
+        percentage:
+          type: number
+        count:
+          type: integer
+
+    DashboardSummary:
+      type: object
+      required: [totalCo2KgThisMonth, totalCo2KgLastMonth, percentageChange, categoryBreakdown, activitiesThisMonth, streakDays]
+      properties:
+        totalCo2KgThisMonth:
+          type: number
+        totalCo2KgLastMonth:
+          type: number
+        percentageChange:
+          type: number
+        categoryBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryBreakdown"
+        activitiesThisMonth:
+          type: integer
+        streakDays:
+          type: integer
+
+    TrendPoint:
+      type: object
+      required: [date, co2Kg]
+      properties:
+        date:
+          type: string
+          format: date
+        co2Kg:
+          type: number
+
+    Tip:
+      type: object
+      required: [id, category, title, description, potentialSavingKg, difficulty]
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        potentialSavingKg:
+          type: number
+        difficulty:
+          type: string
+          description: "easy, medium, hard"
+
+    Goal:
+      type: object
+      required: [id, title, targetCo2Kg, period, currentCo2Kg, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        targetCo2Kg:
+          type: number
+        period:
+          type: string
+          description: "monthly or weekly"
+        currentCo2Kg:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    GoalInput:
+      type: object
+      required: [title, targetCo2Kg, period]
+      properties:
+        title:
+          type: string
+        targetCo2Kg:
+          type: number
+        period:
+          type: string
+
+    GoalUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        targetCo2Kg:
+          type: number
+        period:
+          type: string
