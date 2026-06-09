@@ -10,7 +10,6 @@ import Track from "@/pages/track";
 import History from "@/pages/history";
 import Insights from "@/pages/insights";
 import Goals from "@/pages/goals";
-import Offsets from "@/pages/offsets";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +22,6 @@ function Router() {
         <Route path="/history" component={History} />
         <Route path="/insights" component={Insights} />
         <Route path="/goals" component={Goals} />
-        <Route path="/offsets" component={Offsets} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
